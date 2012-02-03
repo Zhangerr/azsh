@@ -75,12 +75,18 @@ namespace math
                     col = new Color(255 - ((health % 10) * 10), ((health % 10) * 10), 255 - ((health % 10) * 10));
                     //   toRemove.Add(this);
                     //   Console.WriteLine("hit");
+                    Bullet.toremove.Add(b);
                 }
              /*   if (new Rectangle((int)b.pos.X - 10, (int)b.pos.Y - 10, 20, 20).Contains((int)this.pos.X, (int)this.pos.Y))
                 {
 
                 }*/
             }
+            foreach (Bullet b in Bullet.toremove)
+            {
+                Bullet.bullets.Remove(b);
+            }
+            Bullet.toremove.Clear();
             if (health < 1)
             {
                 Particle.burst(this.pos);

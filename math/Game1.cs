@@ -101,6 +101,7 @@ namespace math
             
         }
         bool canpress2 = false;
+        int charge = 0;
         bool canspawn = false;
         int spawntimer;
         protected override void Update(GameTime gameTime)
@@ -114,13 +115,7 @@ namespace math
             foreach (Bullet b in Bullet.bullets)
             {
                 //find out what flipping cos/sin and negating them does
-                if (!this.Window.ClientBounds.Contains((int)b.pos.X + Window.ClientBounds.X, (int)b.pos.Y + Window.ClientBounds.Y))
-                {
-                    Bullet.toremove.Add(b);
-                    continue;
-                }
-                Vector2 vec = new Vector2((float)Math.Cos(b.angle), (float)Math.Sin(b.angle));
-                b.pos -= (vec * (int)b.speed);
+                b.update();
               
             }
             foreach (Particle p in Particle.particles)
@@ -137,26 +132,48 @@ namespace math
                 Bullet.bullets.Remove(b);
             }
             Bullet.toremove.Clear();
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed && !pressed)
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                for (int i = 0; i < 10; i++)
+                if (!pressed)
                 {
-                    Bullet toadd = new Bullet();
-                    toadd.angle = angleofrot;
-                    Random r = new Random();
-                    toadd.col = new Color(r.Next(255), 255, 255);
-                    toadd.pos = location - (new Vector2((float)Math.Cos(angleofrot), (float)Math.Sin(angleofrot)) * i);
-                    Bullet.bullets.Add(toadd);
+
+                    pressed = true;
                 }
-                pressed = true;
+                else
+                {
+                    if (charge < 20)
+                    {
+                        charge++;
+                    }
+                }
             }
             else if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
-                pressed = false;
+                if (pressed)
+                {
+                    for (int i = 0; i < 10 + charge; i++)
+                    {
+                        Bullet toadd = new Bullet();
+                        toadd.angle = angleofrot;
+                        Random r = new Random();
+                        toadd.col = new Color(r.Next(255), 255, 255);
+                        toadd.pos = location - (new Vector2((float)Math.Cos(angleofrot), (float)Math.Sin(angleofrot)) * i);
+                        Bullet.bullets.Add(toadd);
+                    }
+                    pressed = false;
+                    charge = 0;
+                }
             }
             if (Mouse.GetState().RightButton == ButtonState.Pressed && canpress2)
             {
-               createBurst(new Vector2(Mouse.GetState().X, Mouse.GetState().Y));
+              // createBurst(new Vector2(Mouse.GetState().X, Mouse.GetState().Y));
+                Bullet toadd = new Bullet();
+                toadd.angle = angleofrot;
+                Random r = new Random();
+                toadd.col = new Color(r.Next(255), 255, 255);
+                toadd.pos = location;// -(new Vector2((float)Math.Cos(angleofrot), (float)Math.Sin(angleofrot)) * i);
+                toadd.tracking = true;
+                Bullet.bullets.Add(toadd);
                // Enemy.spawnWave();
                 canpress2 = false;
             }
@@ -177,7 +194,7 @@ namespace math
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && canspawn)
             {
-                Enemy.spawnWave();
+               // Enemy.spawnWave();
                 canspawn = false;
             }
                
@@ -339,7 +356,9 @@ namespace math
             spriteBatch.Begin();
             Vector2 mouse = new Vector2(Mouse.GetState().X,Mouse.GetState().Y);
             spriteBatch.DrawString(sf,"Score: " + score + " Ms until next wave: " + (5000 - spawntimer) + " FPS:" + 1f / (gameTime.ElapsedGameTime.Milliseconds / 1000f), new Vector2(50,50),Color.White);
+         
             spriteBatch.Draw(arrow, location,null, Color.White,(float)(angleofrot + Math.PI/2),new Vector2(arrow.Width/2,arrow.Height), 1.0f, SpriteEffects.None,0);
+            spriteBatch.Draw(prim, new Rectangle(50, 10, (int) (200 * (charge / 20f)), 30), Color.SteelBlue);
             foreach (Bullet b in Bullet.bullets)
             {
                 spriteBatch.Draw(prim, new Rectangle((int)b.pos.X, (int)b.pos.Y,2,2), b.col);
@@ -352,7 +371,7 @@ namespace math
             {
                 p.draw(spriteBatch, prim);
             }
-                //  spriteBatch.Draw(prim, new Rectangle(0, 0, (int)mouse.Length(), 2), null, Color.White, (float)(Math.Atan2(mouse.Y, mouse.X)), Vector2.Zero, SpriteEffects.None, 0);
+              //  spriteBatch.Draw(prim, new Rectangle(0, 0, (int)mouse.Length(), 2), null, Color.White, (float)(Math.Atan2(mouse.Y, mouse.X)), Vector2.Zero, SpriteEffects.None, 0);
                 spriteBatch.End();
          
             base.Draw(gameTime);

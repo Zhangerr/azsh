@@ -16,6 +16,7 @@ namespace math
         public int health;
         public int speed;
         public int size;
+        public Rectangle bounds;
         public Enemy(double ang, Color c, Vector2 p, int h, int sp, int sze)
         {
             angle = ang;
@@ -24,6 +25,7 @@ namespace math
             health = h;
             speed = sp;
             size = sze;
+            bounds = new Rectangle((int)this.pos.X, (int)this.pos.Y, this.size, this.size);
         }
         public static void spawnWave()
         {
@@ -48,7 +50,7 @@ namespace math
                 double radians = MathHelper.ToRadians(i);
                 Vector2 unit = new Vector2((float)Math.Cos(radians), (float)Math.Sin(radians));
                 unit *= multiply;
-                Console.WriteLine(new Random().Next(bounds.Width));
+            //    Console.WriteLine(new Random().Next(bounds.Width));
                 unit += new Vector2(r.Next(bounds.Width), r.Next(bounds.Height));
            //     Console.WriteLine(unit.X);
                 Enemy e = new Enemy(radians, Color.Red, unit, 10, r.Next(1,2), r.Next(8,15));
@@ -58,8 +60,9 @@ namespace math
         }
         public void update()
         {
-            Vector2 dest = Game1.location;
+            Vector2 dest = Game1.mainPlayer.location;
             Vector2 result = (dest - pos);
+            this.bounds = new Rectangle((int)this.pos.X, (int)this.pos.Y, this.size, this.size);
             result.Normalize();
             Vector2 direction = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
             direction *= -speed;

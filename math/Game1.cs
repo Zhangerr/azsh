@@ -27,7 +27,8 @@ namespace math
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+              Content.RootDirectory = "Content1";
+            Console.WriteLine(Content.RootDirectory);       
             graphics.PreferMultiSampling = true;
             // graphics.GraphicsDevice.PresentationParameters.MultiSampleType = MultiSampleType.SixteenSamples;
             graphics.ApplyChanges();
